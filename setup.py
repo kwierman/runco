@@ -25,7 +25,8 @@ setup(
                  'runco'},
     entry_points={
         'console_scripts': [
-            'runco=runco.cli:main'
+            'runco=runco.cli:main',
+            'generate_runco_config=runco.cli:generate_runco_config'
         ]
     },
     include_package_data=True,
