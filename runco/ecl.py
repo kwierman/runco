@@ -3,29 +3,10 @@ import sys
 import os.path
 import urllib2, urllib
 from urllib2 import HTTPError
-try:
-    import hashlib
-except ImportError:
-    try:
-        import md5 as hashlib
-    except ImportError:
-        print("Failed to import hashlib or md5")
-        sys.exit(1)
-
+import md5 as hashlib
 import random
+import xml.etree.ElementTree as etree
 
-try:
-    # Python 2.5+                                                                                                                                                                                                   
-    import xml.etree.ElementTree as etree
-#   print("running with ElementTree on Python 2.5+")                                                                                                                                                                
-except ImportError:
-    try:
-        # normal ElementTree install                                                                                                                                                                                
-        import elementtree.ElementTree as etree
-#       print("running with ElementTree")                                                                                                                                                                           
-    except ImportError:
-        print("Failed to import ElementTree from any known place")
-        sys.exit(1)
 
 class ECLAPIException(Exception):
     def __init__(self, value):
@@ -161,6 +142,7 @@ class ECLConnection:
         response = urllib2.urlopen(req)
         return response.read()
 
+
 class ECLEntry:
 
     def __init__(self, category, tags=[], formname='default', text='', preformatted=False,
@@ -189,16 +171,16 @@ class ECLEntry:
         for tag in tags:
             etree.SubElement(self._entry, 'tag', name=tag)
 
-    def setValue(self, name, value):
+    def set_value(self, name, value):
         # Create the field                                                                                                                                                                                          
         field = etree.SubElement(self._form, 'field', name=name)
         # Store the text                                                                                                                                                                                            
         field.text = value
 
-    def setAuthor(self, name):
+    def set_author(self, name):
         self._entry.attrib['author'] = name
 
-    def addAttachment(self, name, filename, data=None):
+    def add_file(self, name, filename, data=None):
         # Create the field                                                                                                                                                                                          
         field = etree.SubElement(self._entry, 'attachment', type='file', name=name, filename=os.path.basename(filename))
         if data:
@@ -210,7 +192,7 @@ class ECLEntry:
             field.text = base64.b64encode(b)
             f.close()
 
-    def addImage(self, name, filename, image=None):
+    def add_image(self, name, filename, image=None):
         # Create the field                                                                                                                                                                                          
         field = etree.SubElement(self._entry, 'attachment', type='image', name=name, filename=os.path.basename(filename))
         # Store the text                                                                                                                                                                                            
@@ -225,3 +207,8 @@ class ECLEntry:
 
     def xshow(self):
         return etree.tostring(self._entry)
+
+
+class ConfiguredECLConnection(ECLConnection):
+    def __init__(self, config):
+        super(ConfiguredECLConnection, self).__init__(config['url'], config['user'], config['pass'])
