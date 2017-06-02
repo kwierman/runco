@@ -24,8 +24,7 @@ class ECLHTTPError(ECLAPIException):
     def __str__(self):
         return '%s %s' % (self.Code, self.Body)
 
-
-class ECLConnection:
+class ECLConnection(object):
 
     SignatureMethod = "md5"
 
@@ -143,7 +142,7 @@ class ECLConnection:
         return response.read()
 
 
-class ECLEntry:
+class ECLEntry(object):
 
     def __init__(self, category, tags=[], formname='default', text='', preformatted=False,
                 private=False, textile=False, related=None):
@@ -211,4 +210,6 @@ class ECLEntry:
 
 class ConfiguredECLConnection(ECLConnection):
     def __init__(self, config):
-        super(ConfiguredECLConnection, self).__init__(config['url'], config['user'], config['pass'])
+        super(ConfiguredECLConnection, self).__init__(config['url'],
+                                                      config['user'],
+                                                      config['pass'])

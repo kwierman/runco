@@ -3,7 +3,7 @@ import logging
 import datetime
 
 
-class SlowControls:
+class SlowControls(object):
     logger = logging.getLogger("sc")
     def __init__(self):
         self.connection = psycopg2.connect(host="ifdbrep2.fnal.gov",
@@ -30,11 +30,12 @@ class SlowControls:
         self.cur.execute(query, (dt_s, tstart, tstop, channel_id, max_severity))
 
 
-def ConfiguredSlowControls(SlowControls):
+class ConfiguredSlowControls(SlowControls):
     def __init__(self, config):
+        self.logger.info("Initiating slow controls connection via configuration")
         self.connection = psycopg2.connect(host=config['url'],
                                            user=config['user'],
-                                           port=config['post'],
+                                           port=config['port'],
                                            password=config['pass'],
                                            database=config['db'])
         self.cur = self.connection.cursor()
