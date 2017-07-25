@@ -1,4 +1,3 @@
-# The configuration of runco uses yaml
 import json
 import os
 import logging
